@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Scout;
 use Carbon\Carbon;
+use App\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -31,7 +32,8 @@ class ViewScoutTest extends TestCase
             'email'=>'scout@scouts.test'
         ]);
 
-        $response = $this->get("/scouts/$scout->id");
+        $user = factory(User::class)->create();
+        $response = $this->actingAs($user)->get("/scouts/$scout->id");
 
         $response->assertStatus(200);
 
@@ -41,5 +43,17 @@ class ViewScoutTest extends TestCase
         $response->assertSee('Scoutsville, UT 84062');
         $response->assertSee('(801)555-1212');
         $response->assertSee('scout@scouts.test');
+    }
+
+    /**
+     * @test
+     */
+    public function AGuestCannotViewAScout()
+    {
+        $response = $this->get('/scouts/1');
+
+        $response->assertStatus(302);
+
+        $response->assertRedirect('/login');
     }
 }

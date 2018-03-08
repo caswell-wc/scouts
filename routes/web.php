@@ -11,4 +11,10 @@
 |
 */
 
-Route::get('/scouts/{scout}', 'ScoutsController@show');
+
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::middleware(['auth'])->get('/scouts/{scout}', 'ScoutsController@show');
