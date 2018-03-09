@@ -24,6 +24,7 @@ class CreateScoutsTable extends Migration
             $table->string('postal_code');
             $table->string('phone_number');
             $table->string('email');
+            $table->integer('rank_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }

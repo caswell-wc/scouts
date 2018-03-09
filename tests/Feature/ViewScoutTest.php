@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Rank;
 use App\Scout;
 use Carbon\Carbon;
 use App\User;
@@ -55,5 +56,44 @@ class ViewScoutTest extends TestCase
         $response->assertStatus(302);
 
         $response->assertRedirect('/login');
+    }
+
+    /**
+     * @test
+     */
+    public function TheScoutViewShowsTheRankBeingWorkedOn()
+    {
+        $user = factory(User::class)->create();
+        $scout = factory(Scout::class)->create();
+
+        $response = $this->actingAs($user)->get("/scouts/$scout->id");
+
+        $response->assertStatus(200);
+        $response->assertSee('Working On: Bobcat');
+    }
+
+    /**
+     * @test
+     */
+    public function TheScoutViewShowsTheCurrentRankForTheScout()
+    {
+        $this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $wolfRank = factory(Rank::class)->create([
+        'name'=>'Wolf'
+        ]);
+        $bobcatRank = factory(Rank::class)->create([
+            'name'=>'Bobcat',
+            'next_rank_id'=> $wolfRank->id
+        ]);
+        $scout = factory(Scout::class)->create([
+            'rank_id'=>$bobcatRank->id
+        ]);
+
+        $response = $this->actingAs($user)->get("/scouts/$scout->id");
+
+        $response->assertStatus(200);
+        $response->assertSee('Current Rank: Bobcat');
+        $response->assertSee('Working On: Wolf');
     }
 }
