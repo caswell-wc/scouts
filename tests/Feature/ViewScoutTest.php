@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Rank;
+use App\Requirement;
 use App\Scout;
 use Carbon\Carbon;
 use App\User;
@@ -20,6 +21,8 @@ class ViewScoutTest extends TestCase
     public function AUserCanViewAScout()
     {
         $this->withoutExceptionHandling();
+
+        factory(Rank::class)->create(['name'=>'Bobcat']);
 
         $scout = factory(Scout::class)->create([
             "first_name" => "John",
@@ -65,6 +68,7 @@ class ViewScoutTest extends TestCase
     {
         $user = factory(User::class)->create();
         $scout = factory(Scout::class)->create();
+        factory(Rank::class)->create(['name'=>'Bobcat']);
 
         $response = $this->actingAs($user)->get("/scouts/$scout->id");
 
@@ -77,7 +81,6 @@ class ViewScoutTest extends TestCase
      */
     public function TheScoutViewShowsTheCurrentRankForTheScout()
     {
-        $this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         $wolfRank = factory(Rank::class)->create([
         'name'=>'Wolf'
@@ -95,5 +98,38 @@ class ViewScoutTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Current Rank: Bobcat');
         $response->assertSee('Working On: Wolf');
+    }
+
+    /**
+     * @test
+     */
+    public function ItShowsTheRequirementsForTheRankBeingWorkedOn()
+    {
+        $this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $bobcatRank = factory(Rank::class)->create([
+            'name'=>'Bobcat',
+            'next_rank_id'=>factory(Rank::class)->create([
+                'name'=>'Wolf'
+            ])->id
+        ]);
+        $scout = factory(Scout::class)->create();
+
+        factory(Requirement::class)->create([
+            'rank_id' => $bobcatRank->id,
+            'number' => '1',
+            'description' => 'Learn and say the Scout Oath, with help if needed.'
+        ]);
+        factory(Requirement::class)->create([
+            'rank_id' => $bobcatRank->id,
+            'number' => '2',
+            'description' => 'Learn and say the Scout Law, with help if needed.'
+        ]);
+
+        $response = $this->actingAs($user)->get("/scouts/$scout->id");
+
+        $response->assertStatus(200);
+        $response->assertSee('Learn and say the Scout Oath, with help if needed.');
+        $response->assertSee('Learn and say the Scout Law, with help if needed.');
     }
 }

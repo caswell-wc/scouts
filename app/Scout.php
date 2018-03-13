@@ -15,6 +15,10 @@ class Scout extends Model
 
     public function nextRank()
     {
-        return $this->rank->nextRank();
+        if(!empty($this->rank_id)) {
+            return $this->rank->nextRank;
+        }
+
+        return Rank::where('name', 'Bobcat')->first();
     }
 }

@@ -37,6 +37,18 @@ class ScoutTest extends TestCase
         $scout = factory(Scout::class)->create(['rank_id'=>$rank->id]);
 
 
-        $this->assertEquals($nextRank->name, $scout->nextRank->name);
+        $this->assertEquals($nextRank->name, $scout->nextRank()->name);
+    }
+
+    /**
+     * @test
+     */
+    public function aNewScoutHasANextRank()
+    {
+        $bobcatRank = factory(Rank::class)->create(['name'=>'Bobcat']);
+
+        $scout = factory(Scout::class)->create(['rank_id'=>null]);
+
+        $this->assertEquals($bobcatRank->id, $scout->nextRank()->id);
     }
 }

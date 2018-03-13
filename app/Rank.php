@@ -11,4 +11,9 @@ class Rank extends Model
     {
         return $this->belongsTo(Rank::class, 'next_rank_id');
     }
+
+    public function requirements()
+    {
+        return $this->hasMany(Requirement::class);
+    }
 }

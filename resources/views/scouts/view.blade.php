@@ -6,7 +6,14 @@
 <p>{{ $scout->email }}</p>
 @if(!empty($scout->rank))
     <p>Current Rank: {{ $scout->rank->name }}</p>
-    <p>Working On: {{$scout->nextRank->name}}</p>
-@else
-    <p>Working On: Bobcat</p>
 @endif
+@if(!empty($scout->nextRank()))
+    <p>Working On: {{$scout->nextRank()->name}}</p>
+@endif
+
+<h2>Requirements:</h2>
+<ul>
+    @foreach($scout->nextRank()->requirements as $requirement)
+        <li>{{$requirement->number}}: {{$requirement->description}}</li>
+    @endforeach
+</ul>
