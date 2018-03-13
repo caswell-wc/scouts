@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Adventure;
 use App\Rank;
 use App\Requirement;
 use Tests\TestCase;
@@ -46,5 +47,24 @@ class RankTest extends TestCase
         $requirementIds = $rank->requirements->pluck('id')->toArray();
         $this->assertTrue(in_array($req1->id, $requirementIds));
         $this->assertTrue(in_array($req2->id, $requirementIds));
+    }
+
+    /**
+     * @test
+     */
+    public function itHasAdventures()
+    {
+        $rank = factory(Rank::class)->create();
+
+        $adventures = factory(Adventure::class, 2)->create([
+            'rank_id'=>$rank->id
+        ]);
+
+        $rankAdventures = $rank->adventures;
+
+        $this->assertCount(2, $rankAdventures);
+        foreach ($adventures as $adventure) {
+            $this->assertTrue(in_array($adventure->id, $rankAdventures->pluck('id')->toArray()));
+        }
     }
 }

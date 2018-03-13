@@ -16,4 +16,9 @@ class Rank extends Model
     {
         return $this->hasMany(Requirement::class);
     }
+
+    public function adventures()
+    {
+        return $this->hasMany(Adventure::class);
+    }
 }

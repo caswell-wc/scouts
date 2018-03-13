@@ -17,3 +17,10 @@
         <li>{{$requirement->number}}: {{$requirement->description}}</li>
     @endforeach
 </ul>
+
+<h2>Adventures:</h2>
+<ul>
+    @foreach($scout->nextRank()->adventures as $adventure)
+        <li>{{$adventure->name}}</li>
+    @endforeach
+</ul>

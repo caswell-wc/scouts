@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Adventure;
 use App\Rank;
 use App\Requirement;
 use App\Scout;
@@ -105,7 +106,6 @@ class ViewScoutTest extends TestCase
      */
     public function ItShowsTheRequirementsForTheRankBeingWorkedOn()
     {
-        $this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         $bobcatRank = factory(Rank::class)->create([
             'name'=>'Bobcat',
@@ -131,5 +131,28 @@ class ViewScoutTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Learn and say the Scout Oath, with help if needed.');
         $response->assertSee('Learn and say the Scout Law, with help if needed.');
+    }
+
+    /**
+     * @test
+     */
+    public function itShowsTheAdventuresForTheRankBeingWorkedOn()
+    {
+        $this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $bobcatRank = factory(Rank::class)->create(['name'=>'Bobcat']);
+
+        $adventure = factory(Adventure::class)->create([
+            'name'=>'Test Adventure Name',
+            'rank_id'=>$bobcatRank->id
+        ]);
+
+        $scout = factory(Scout::class)->create();
+
+
+        $response = $this->actingAs($user)->get("/scouts/$scout->id");
+
+        $response->assertStatus(200);
+        $response->assertSee('Test Adventure Name');
     }
 }
