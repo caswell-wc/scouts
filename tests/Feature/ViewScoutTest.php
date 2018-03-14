@@ -17,8 +17,6 @@ class ViewScoutTest extends TestCase
      */
     public function AUserCanViewAScout()
     {
-        $this->withoutExceptionHandling();
-
         $scout = factory(Scout::class)->create([
             "first_name" => "John",
             "last_name" => "Scout",
@@ -34,6 +32,7 @@ class ViewScoutTest extends TestCase
         $response = $this->get("/scouts/$scout->id");
 
         $response->assertStatus(200);
+        $response->assertViewIs('scouts.view');
 
         $response->assertSee('John Scout');
         $response->assertSee(Carbon::parse("-8 years")->format('M d,Y'));
