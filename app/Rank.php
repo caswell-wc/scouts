@@ -14,7 +14,7 @@ class Rank extends Model
 
     public function requirements()
     {
-        return $this->hasMany(Requirement::class);
+        return $this->morphMany(Requirement::class, 'requireable');
     }
 
     public function adventures()

@@ -116,12 +116,14 @@ class ViewScoutTest extends TestCase
         $scout = factory(Scout::class)->create();
 
         factory(Requirement::class)->create([
-            'rank_id' => $bobcatRank->id,
+            'requireable_type'=>Rank::class,
+            'requireable_id' => $bobcatRank->id,
             'number' => '1',
             'description' => 'Learn and say the Scout Oath, with help if needed.'
         ]);
         factory(Requirement::class)->create([
-            'rank_id' => $bobcatRank->id,
+            'requireable_type'=>Rank::class,
+            'requireable_id' => $bobcatRank->id,
             'number' => '2',
             'description' => 'Learn and say the Scout Law, with help if needed.'
         ]);
@@ -138,11 +140,10 @@ class ViewScoutTest extends TestCase
      */
     public function itShowsTheAdventuresForTheRankBeingWorkedOn()
     {
-        $this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         $bobcatRank = factory(Rank::class)->create(['name'=>'Bobcat']);
 
-        $adventure = factory(Adventure::class)->create([
+        factory(Adventure::class)->create([
             'name'=>'Test Adventure Name',
             'rank_id'=>$bobcatRank->id
         ]);
@@ -154,5 +155,40 @@ class ViewScoutTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Test Adventure Name');
+    }
+
+    /**
+     * @test
+     */
+    public function itShowsTheRequirementsForTheAdventure()
+    {
+        $user = factory(User::class)->create();
+        $bobcatRank = factory(Rank::class)->create(['name'=>'Bobcat']);
+
+        $adventure = factory(Adventure::class)->create([
+            'name'=>'Test Adventure Name',
+            'rank_id'=>$bobcatRank->id
+        ]);
+
+        factory(Requirement::class)->create([
+            'requireable_type'=>Adventure::class,
+            'requireable_id'=>$adventure->id,
+            'number' => '1',
+            'description' => 'Adventure Requirement 1 description'
+        ]);
+        factory(Requirement::class)->create([
+            'requireable_type'=>Adventure::class,
+            'requireable_id'=>$adventure->id,
+            'number' => '2',
+            'description' => 'Adventure Requirement 2 description'
+        ]);
+
+        $scout = factory(Scout::class)->create();
+
+        $response = $this->actingAs($user)->get("/scouts/$scout->id");
+
+        $response->assertStatus(200);
+        $response->assertSee('Adventure Requirement 1 description');
+        $response->assertSee('Adventure Requirement 2 description');
     }
 }

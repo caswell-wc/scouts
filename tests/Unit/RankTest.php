@@ -33,12 +33,14 @@ class RankTest extends TestCase
         $rank = factory(Rank::class)->create(['name'=>'Bobcat']);
 
         $req1 = factory(Requirement::class)->create([
-            'rank_id' => $rank->id,
+            'requireable_type'=>Rank::class,
+            'requireable_id' => $rank->id,
             'number' => '1',
             'description' => 'Learn and say the Scout Oath, with help if needed.'
         ]);
         $req2 = factory(Requirement::class)->create([
-            'rank_id' => $rank->id,
+            'requireable_type'=>Rank::class,
+            'requireable_id' => $rank->id,
             'number' => '2',
             'description' => 'Learn and say the Scout Law, with help if needed.'
         ]);

@@ -21,6 +21,13 @@
 <h2>Adventures:</h2>
 <ul>
     @foreach($scout->nextRank()->adventures as $adventure)
-        <li>{{$adventure->name}}</li>
+        <li>
+            {{$adventure->name}}
+            <ul>
+            @foreach($adventure->requirements as $requirement)
+                 <li>{{$requirement->number}}: {{ $requirement->description }}</li>
+            @endforeach
+            </ul>
+        </li>
     @endforeach
 </ul>
