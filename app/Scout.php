@@ -21,4 +21,14 @@ class Scout extends Model
 
         return Rank::where('name', 'Bobcat')->first();
     }
+
+    public function completedRequirements()
+    {
+        return $this->hasMany(CompleteRequirement::class);
+    }
+
+    public function hasCompletedRequirement($requirement_id)
+    {
+        return $this->completedRequirements->contains('requirement_id', $requirement_id);
+    }
 }

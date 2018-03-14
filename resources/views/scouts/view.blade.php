@@ -25,7 +25,12 @@
             {{$adventure->name}}
             <ul>
             @foreach($adventure->requirements as $requirement)
-                 <li>{{$requirement->number}}: {{ $requirement->description }}</li>
+                 <li>
+                     @if($scout->hasCompletedRequirement($requirement->id))
+                         <i class='fa fa-check'></i>
+                     @endif
+                     {{$requirement->number}}: {{ $requirement->description }}
+                 </li>
             @endforeach
             </ul>
         </li>

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Adventure;
+use App\CompleteRequirement;
 use App\Rank;
 use App\Requirement;
 use App\Scout;
@@ -190,5 +191,40 @@ class ViewScoutTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Adventure Requirement 1 description');
         $response->assertSee('Adventure Requirement 2 description');
+    }
+
+    /**
+     * @test
+     */
+    public function itShowsCompletedRequirements()
+    {
+        $this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $bobcatRank = factory(Rank::class)->create(['name'=>'Bobcat']);
+
+        $adventure = factory(Adventure::class)->create([
+            'name'=>'Test Adventure Name',
+            'rank_id'=>$bobcatRank->id
+        ]);
+
+        $requirement = factory(Requirement::class)->create([
+            'requireable_type'=>Adventure::class,
+            'requireable_id'=>$adventure->id,
+            'number' => '1',
+            'description' => 'Adventure Requirement 1 description'
+        ]);
+
+        $scout = factory(Scout::class)->create();
+
+        factory(CompleteRequirement::class)->create([
+            'scout_id'=>$scout->id,
+            'requirement_id'=>$requirement->id,
+            'completed_at'=>Carbon::now()
+        ]);
+
+        $response = $this->actingAs($user)->get("/scouts/$scout->id");
+
+        $response->assertStatus(200);
+        $response->assertSee("<i class='fa fa-check'></i>");
     }
 }

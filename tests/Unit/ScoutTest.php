@@ -2,7 +2,10 @@
 
 namespace Tests\Unit;
 
+use App\Adventure;
+use App\CompleteRequirement;
 use App\Rank;
+use App\Requirement;
 use App\Scout;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -50,5 +53,42 @@ class ScoutTest extends TestCase
         $scout = factory(Scout::class)->create(['rank_id'=>null]);
 
         $this->assertEquals($bobcatRank->id, $scout->nextRank()->id);
+    }
+
+    /**
+     * @test
+     */
+    public function determineIfAScoutHasCompletedARequirement()
+    {
+        $scout = factory(Scout::class)->create();
+
+        $requirement = factory(Requirement::class)->create();
+
+        $completedRequirement = factory(CompleteRequirement::class)->create([
+            'scout_id'=>$scout->id,
+            'requirement_id'=>$requirement->id
+        ]);
+
+        $this->assertTrue($scout->hasCompletedRequirement($requirement->id));
+    }
+
+    /**
+     * @test
+     */
+    public function determineThatAScoutHasNotCompletedARequirement()
+    {
+        $scout = factory(Scout::class)->create();
+
+        $requirement = factory(Requirement::class)->create();
+
+        $completedRequirement = factory(CompleteRequirement::class)->create([
+            'scout_id' => $scout->id,
+            'requirement_id' => $requirement->id
+        ]);
+
+        $secondRequirement = factory(Requirement::class)->create();
+
+        $this->assertFalse($scout->hasCompletedRequirement($secondRequirement->id));
+
     }
 }
